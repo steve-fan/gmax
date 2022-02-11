@@ -1,0 +1,93 @@
+---
+- hosts: web
+  vars:
+    http_port: 80
+    max_clients: 200
+    package_dir: "{{ansible_env.HOME}}"
+  tasks:
+  - name: install epel-release
+    become: true
+    become_user: root
+    yum:
+      name: epel-release
+      state: present
+
+  - name: install wget,unzip, development tools
+    become: true
+    become_user: root
+    yum:
+      name:
+        - wget
+        - unzip
+        - "@Development tools"
+      state: present
+
+  - name: download repository package
+    get_url:
+      url: https://packages.erlang-solutions.com/erlang-solutions-1.0-1.noarch.rpm
+      dest: "{{package_dir}}/erlang-solutions-1.0-1.noarch.rpm"
+
+  - name: add Erlang Solutions Repository to our system
+    become: true
+    become_user: root
+    yum:
+      name: "{{package_dir}}/erlang-solutions-1.0-1.noarch.rpm"
+      state: present
+
+  - name: install erlang package
+    become: true
+    become_user: root
+    yum:
+      name: esl-erlang
+      state: present
+
+  - name: download elixir precompiled package
+    get_url:
+      url: https://github.com/elixir-lang/elixir/releases/download/v1.9.1/Precompiled.zip
+      dest: "{{package_dir}}/Precompiled.zip"
+
+  - name: create elixir directory under /usr/lib
+    become: true
+    become_user: root
+    file:
+      path: /usr/lib/elixir
+      state: directory
+      mode: 0755
+
+  - name: unarchive elixir precompiled package
+    become: true
+    become_user: root
+    unarchive:
+      remote_src: true
+      src: "{{package_dir}}/Precompiled.zip"
+      dest: /usr/lib/elixir
+
+  - name: create symbol link
+    become: true
+    become_user: root
+    file:
+      src: "/usr/lib/elixir/bin/{{item}}"
+      dest: "/usr/bin/{{item}}"
+      state: link
+    with_items:
+        - elixir
+        - iex
+        - mix
+        - elixirc
+
+  - name: set locale
+    become: true
+    become_user: root
+    lineinfile:
+      path: /etc/profile.d/locale.sh
+      line: "{{item}}"
+      create: yes
+    with_items:
+      - export LC_CTYPE=en_US.UTF-8
+      - export LC_ALL=en_US.UTF-8
+
+  - name: install hex
+    command: mix local.hex --force
+
+  - name: install rebar3
+    command: mix local.rebar --force

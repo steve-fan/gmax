@@ -1,0 +1,5 @@
+[web]
+zhenchao.xyz ansible_ssh_port=2020 ansible_ssh_user=driver
+
+[db]
+zhenchao.xyz ansible_ssh_port=2020 ansible_ssh_user=driver

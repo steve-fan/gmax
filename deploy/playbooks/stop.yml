@@ -1,0 +1,21 @@
+- hosts: web
+  remote_user: ansible
+  vars_files:
+    - vars/main.yml
+  become: true
+  become_user: "{{web_app_user}}"
+  tasks:
+  - name: find epmd
+    find:
+      path: "{{app_dir}}"
+      patterns: epmd
+      recurse: yes
+    register: epmd_find_result
+
+  - name: stop web server
+    command: "{{app_dir}}/bin/{{ app_name }} stop"
+    ignore_errors: true
+
+  - name: stop epmd server
+    command: "{{epmd_find_result.files[0]['path']}} -kill"
+    ignore_errors: true

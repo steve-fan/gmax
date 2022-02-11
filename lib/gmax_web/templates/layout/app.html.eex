@@ -1,0 +1,14 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+	<title>GMAX: Gmail 邮件批量发送 | Gmail 邮件合并 </title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
+    </head>
+    <body class="landing is-preload">
+	<%= render @view_module, @view_template, assigns %>
+	<!-- Scripts -->
+	<script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+    </body>
+</html>

@@ -1,0 +1,33 @@
+- hosts: db
+  remote_user: driver
+  become: yes
+  tasks:
+    - name: install postgresql repository RPM
+      yum:
+        name: https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm
+        state: present
+
+    - name: install the server packages
+      yum:
+        name: postgresql96-server
+        state: present
+
+    - name: install the client packages
+      yum:
+        name: postgresql96
+        state: present
+
+    - name: initialize database
+      command: /usr/pgsql-9.6/bin/postgresql96-setup initdb
+      ignore_errors: true
+
+    - name: auto start postgres server
+      command: "{{item}}"
+      with_items:
+        - systemctl enable postgresql-9.6
+        - systemctl start postgresql-9.6
+
+    - name: install psycopg2
+      yum:
+        name: python-psycopg2
+        state: latest

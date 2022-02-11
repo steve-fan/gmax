@@ -1,0 +1,13 @@
+- hosts: web
+  remote_user: ansible
+  vars_files:
+    - vars/main.yml
+  tasks:
+  - name: stop web server
+    become: true
+    become_user: "{{web_app_user}}"
+    command: "{{app_dir}}/bin/{{ app_name }} stop"
+  - name: start web server
+    become: true
+    become_user: "{{web_app_user}}"
+    command: "{{app_dir}}/bin/{{ app_name }} start"

@@ -1,0 +1,50 @@
+- hosts: web
+  remote_user: driver
+  vars_files:
+    - vars/main.yml
+  become: yes
+  become_user: root
+  tasks:
+    - name: install epel
+      yum:
+        name: epel-release
+        state: present
+
+    - name: install nginx
+      yum:
+        name: nginx
+        state: present
+
+    - name: autostart nginx
+      command: systemctl enable nginx
+
+    - name: touch access log
+      file:
+        path: /var/log/nginx/access.log
+        owner: root
+        group: root
+        mode: 644
+        state: touch
+
+    - name: setup nginx config
+      template:
+        src: "../templates/nginx.conf.j2"
+        dest: "/etc/nginx/nginx.conf"
+      notify: restart nginx
+
+    - name: setup web server config
+      template:
+        src: "../templates/web_server.j2"
+        dest: "/etc/nginx/conf.d/{{ app_name}}.conf"
+      notify: restart nginx
+
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted
+
+  handlers:
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted

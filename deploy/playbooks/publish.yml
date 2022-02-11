@@ -1,0 +1,34 @@
+- hosts: web
+  vars_files:
+    - vars/main.yml
+  remote_user: driver
+  become: true
+  become_user: "{{ web_app_user }}"
+  tasks:
+    - name: remove previous release
+      become: true
+      become_user: root
+      file:
+        path: "{{ app_dir }}"
+        state: absent
+
+    - name: create release directory
+      file:
+        path: "{{app_dir}}"
+        state: directory
+
+    - name: install rsync on remote server
+      yum:
+        name: rsync
+        state: present
+
+    - name: copy release package to remote server
+      synchronize:
+        src: "../../rel/artifacts/{{ app_name }}.tar.gz"
+        dest: "{{app_dir}}"
+
+    - name: unarchive release package
+      unarchive:
+        src: "{{app_dir}}/{{ app_name }}.tar.gz"
+        dest: "{{app_dir}}"
+        remote_src: true

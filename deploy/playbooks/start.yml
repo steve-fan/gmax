@@ -1,0 +1,9 @@
+- hosts: web
+  vars_files:
+    - vars/main.yml
+  become_user: "{{ web_app_user }}"
+  tasks:
+  - name: start web server
+    become: true
+    become_user: "{{web_app_user}}"
+    command: "{{app_dir}}/bin/{{ app_name }} start"

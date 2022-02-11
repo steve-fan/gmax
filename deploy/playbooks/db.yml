@@ -1,0 +1,18 @@
+- hosts: db
+  remote_user: driver
+  vars_files:
+    - vars/main.yml
+  become: yes
+  become_user: postgres
+  tasks:
+    - name: create database
+      postgresql_db:
+        name: "{{db.name}}"
+        state: present
+
+    - name: create user
+      postgresql_user:
+        db: "{{ db.name }}"
+        name: "{{ db.user }}"
+        password: "{{ db.password }}"
+        state: present

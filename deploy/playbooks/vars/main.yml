@@ -1,0 +1,10 @@
+---
+app_name: gmax
+app_server_port: 4000
+app_server_name: gmaxapp.com
+web_app_user: gmax
+app_dir: /home/gmax/apps
+db:
+  name: gmax_prod
+  user: gmax
+  password: Nyy8RiaykbHpUiDzv
